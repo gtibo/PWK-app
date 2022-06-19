@@ -4,7 +4,7 @@
   import { backOut } from 'svelte/easing';
   import { flip } from 'svelte/animate';
   import request_path from '$lib/request_path.js';
-  
+
   const progress = tweened(0, {
     duration: 400,
     easing: backOut
@@ -71,7 +71,7 @@
 
 <svelte:window on:pointermove={pointermove} on:pointerup={pointerup}/>
 
-<div bind:this={timeline} class="timeline">
+<div bind:this={timeline} class="timeline touch-none">
   <div class="frames" class:disabled={disabled} style="left:{-frame_percent * $progress}%;">
     {#each frames as frame, i (frame.id)}
       <!-- All frames -->

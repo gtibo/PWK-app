@@ -9,9 +9,12 @@
 }
 
 body{
-  @apply min-h-screen touch-none select-none;
+  @apply min-h-screen select-none touch-pan-x	touch-pan-y;
 }
-
+button {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
 .tile-bg{
   background-image: url("./tile.png");
   background-size: 25%;

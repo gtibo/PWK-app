@@ -62,7 +62,7 @@
     </div>
   </div>
 
-  <img class="w-full tile-bg" style="aspect-ratio:{vignette.width / vignette.height};" src="{request_path}/{vignette.path}"/>
+  <img class="w-full tile-bg aspect-video	object-contain" src="{request_path}/{vignette.path}"/>
   <footer class="flex gap-2 p-2 justify-between items-center">
     <h3 class="font-semibold text-gray-600">
       <span class="text-xs text-gray-400">{type}</span>
@@ -78,7 +78,7 @@
       <button
       on:pointerdown={deleteDown}
       on:pointerup={deleteUp}
-      class="px-3 py-2 bg-orange-500/50 rounded-r-xl">
+      class="px-3 py-2 bg-orange-500/50 rounded-r-xl touch-none">
         <svg class="w-6 h-6 fill-orange-500" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M7.82857 6.902V5.13368C7.82857 2.29843 10.1311 0 12.9714 0H19.0667C21.907 0 24.2095 2.29843 24.2095 5.13368V6.902H25.7143C26.9767 6.902 28 7.92353 28 9.18364V12.6061H4V9.18364C4 7.92353 5.02335 6.902 6.28571 6.902H7.82857ZM11.2571 5.13368C11.2571 4.1886 12.0247 3.42245 12.9714 3.42245H19.0667C20.0134 3.42245 20.781 4.18859 20.781 5.13368V6.902H11.2571V5.13368Z" />
           <path d="M4 14.8877L6.55962 30.0964C6.74456 31.1952 7.69752 32 8.81375 32H23.1863C24.3025 32 25.2554 31.1952 25.4404 30.0964L28 14.8877H4Z" />

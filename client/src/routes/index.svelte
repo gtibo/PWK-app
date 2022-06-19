@@ -1,4 +1,5 @@
 <script>
+  import LoginView from "$lib/views/login/view.svelte";
   import HomeView from "$lib/views/home/view.svelte";
   import AnimatorView from "$lib/views/animator/view.svelte";
   import TemplateEditorView from "$lib/views/template_editor/view.svelte";
@@ -8,13 +9,14 @@
   import { cvHelper } from "$lib/cvHelper.js";
   import { pagination } from "$lib/store.js";
   import { onMount } from "svelte";
-  pagination.setPage("home")
+  pagination.setPage("login")
 
   onMount(() => {
     cvHelper.load();
   });
 
 	const pages = {
+    "login": LoginView,
 	  "home": HomeView,
 	  "animator": AnimatorView,
 	  "template_editor": TemplateEditorView,
@@ -30,7 +32,7 @@
   <ScannerView/>
 {/if}
 {#key $pagination}
-  <div out:fade={{duration:100}} in:fly="{{y:-100, delay:200}}" class="top-0 left-0 absolute w-full h-full bg-white">
+  <div out:fade={{duration:100}} in:fly="{{y:-100, delay:200}}" class="top-0 left-0 absolute w-full h-full bg-white flex flex-col">
     <svelte:component this={pages[$pagination.path]}/>
   </div>
 {/key}

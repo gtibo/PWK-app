@@ -13,6 +13,7 @@ function getAll() {
 }
 
 function getMultiple(page = 1, asset_type = undefined) {
+  if(!Number.isInteger(parseInt(page))) throw "page is not a number :(";
   const offset = (page - 1) * 10;
   let filter = asset_type == undefined ? "" : `WHERE type = '${asset_type}'`;
   const res = db.prepare(`SELECT id, type, name, data FROM assets ${filter} ORDER BY id DESC LIMIT ?,?`).all([offset, 10]);

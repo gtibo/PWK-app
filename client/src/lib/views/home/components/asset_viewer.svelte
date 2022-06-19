@@ -4,7 +4,7 @@
   import { fade } from 'svelte/transition';
   import { scanning, pagination } from '$lib/store.js';
   import request_path from '$lib/request_path.js';
-  
+
   import { onMount } from "svelte";
 
   let fetch_promise = null,
@@ -32,12 +32,14 @@
     let fn = {
       "drawing": editDrawing,
       "animation": editAnimation,
+      "template": editTemplate
     };
     fn[asset_type](asset_id);
   }
 
   async function editDrawing(asset_id){
     let confirmScanFunc = async function(imageBlob) {
+      if(!imageBlob) return;
       let formData = new FormData();
       formData.append('picture', imageBlob);
       let edit_res = await fetch(`${request_path}/assets/edit/drawing/${asset_id}`, {
@@ -53,6 +55,9 @@
     pagination.setPage("animator", {asset_id});
   }
 
+  function editTemplate(asset_id){
+    pagination.setPage("template_editor", {asset_id});
+  }
 
 </script>
 

@@ -62,6 +62,7 @@
   }
 
   function cancel(){
+    $scanning.confirmScanFunc(false);
     scanning.close();
   }
 
