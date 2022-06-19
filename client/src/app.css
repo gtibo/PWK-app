@@ -1,0 +1,20 @@
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+
+@font-face {
+  font-family: 'RedHatDisplay';
+  src: url("/fonts/RedHatDisplay-VariableFont_wght.ttf") format('truetype-variations');
+  font-display: swap;
+}
+
+body{
+  @apply min-h-screen touch-none select-none;
+}
+
+.tile-bg{
+  background-image: url("./tile.png");
+  background-size: 25%;
+}
+
+@tailwind utilities;
