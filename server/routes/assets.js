@@ -67,7 +67,7 @@ router.get('/multiple/:page/:asset_type?', function(req, res, next) {
 router.get('/:id', function(req, res, next) {
   try {
     let asset = getAsset(req.params.id);
-    if(!asset){
+    if (!asset) {
       res.status(404).send(`This asset doesn't exist...`);
       return;
     }
@@ -85,6 +85,9 @@ function assetGetVignette(asset) {
     },
     "animation": (asset) => {
       return getImage(asset.data.frames[0]);
+    },
+    "template": (asset) => {
+      return getImage(asset.data.texture);
     }
   }
   return fn[asset.type](asset);
@@ -101,6 +104,11 @@ function assetImageIDToData(asset) {
     "animation": (asset) => {
       asset.data.frames = asset.data.frames.map(frame => getImage(frame));
       return asset;
+    },
+    "template": (asset) => {
+      let texture_id = asset.data.texture;
+      asset.data.texture = getImage(texture_id);
+      return asset;
     }
   }
   return fn[asset.type](clone_asset);
@@ -109,7 +117,8 @@ function assetImageIDToData(asset) {
 function assetImagesList(asset) {
   let fn = {
     "drawing": (asset) => [asset.data.image],
-    "animation": (asset) => asset.data.frames
+    "animation": (asset) => asset.data.frames,
+    "template": (asset) => [asset.data.texture]
   }
   return fn[asset.type](asset);
 }
@@ -216,7 +225,9 @@ router.put('/addframe/animation/:id', upload.single("picture"), function(req, re
     let asset_data = getAsset(req.params.id).data;
     asset_data.frames.push(image_id);
     // Update the db
-    editAsset(req.params.id, {data: JSON.stringify(asset_data)});
+    editAsset(req.params.id, {
+      data: JSON.stringify(asset_data)
+    });
     // Success, frame was added to the animation asset!
     res.status(200).json({
       added_frame: added_frame
@@ -233,26 +244,65 @@ router.put('/save/animation/:id', function(req, res, next) {
     let asset_data = getAsset(req.params.id).data;
     asset_data.frames = req.body.frames;
     asset_data.fps = req.body.fps;
-    editAsset(req.params.id, {data: JSON.stringify(asset_data)});
+    editAsset(req.params.id, {
+      data: JSON.stringify(asset_data)
+    });
     res.sendStatus(200);
   } catch (err) {
     console.log(err);
     res.status(500).send("Couldn't save animation :(");
   }
 });
-
 router.delete('/deleteframe/animation/:id/:frameindex', function(req, res, next) {
   try {
     let asset_data = getAsset(req.params.id).data;
     let image_to_delete_id = asset_data.frames[req.params.frameindex];
     asset_data.frames.splice(req.params.frameindex, 1);
-    editAsset(req.params.id, {data: JSON.stringify(asset_data)});
+    editAsset(req.params.id, {
+      data: JSON.stringify(asset_data)
+    });
     let image_to_delete_path = path.resolve(getImage(image_to_delete_id).path);
     if (fs.existsSync(image_to_delete_path)) fs.unlinkSync(image_to_delete_path);
     res.sendStatus(200);
   } catch (err) {
     console.log(err);
     res.status(500).send("Couldn't save animation :(");
+  }
+});
+//
+// TEMPLATE ASSET ROUTES //
+//
+router.post('/create/template', upload.single("picture"), function(req, res, next) {
+  try {
+    let model_data = JSON.parse(req.body.model_data);
+    let image_path = `images/${req.file.filename}`;
+    let {
+      width,
+      height
+    } = sizeOf(image_path);
+    let texture_id = addImage(image_path, width, height);
+    let added_texture = getImage(texture_id);
+    // Create a template asset with a texture
+    let new_asset_id = addAsset("template", JSON.stringify(createModel("template", texture_id, model_data)));
+    // Success, template asset is created.
+    res.status(200).json({
+      asset_id: new_asset_id
+    })
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Couldn't create template asset :(");
+  }
+});
+
+router.post('/edit/template', function(req, res, next) {
+  try {
+    // Success, template asset is edited.
+    res.status(200).json({
+      asset_id: new_asset_id
+    })
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Couldn't edit template asset :(");
   }
 });
 
@@ -269,7 +319,15 @@ function createModel(asset_type, ...args) {
         "frames": [images_id],
         "fps": fps
       }
-    }
+    },
+    "template": (args) => {
+      let texture_id = args[0],
+        model_data = args[1];
+      return {
+        "texture": texture_id,
+        "model_data": model_data
+      }
+    },
   };
   return fn[asset_type](args)
 }
