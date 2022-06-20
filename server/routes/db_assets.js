@@ -4,8 +4,9 @@ const db = new sqlite(path.resolve('database.db'), {
   fileMustExist: true
 });
 
-function getAll() {
-  let res = db.prepare(`SELECT id, type, name, data FROM assets ORDER BY id DESC`).all([]);
+function getAll(asset_type = undefined) {
+  let filter = asset_type == undefined ? "" : `WHERE type = '${asset_type}'`;
+  let res = db.prepare(`SELECT id, type, name, data FROM assets ${filter} ORDER BY id DESC`).all([]);
   return res.map((asset) => {
     asset.data = JSON.parse(asset.data);
     return asset;
