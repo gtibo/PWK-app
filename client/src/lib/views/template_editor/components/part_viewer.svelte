@@ -8,7 +8,7 @@
 
 <div
 bind:this={container}
-class="relative tile-bg flex-1 rounded-xl"
+class="relative tile-bg flex-1 rounded-xl touch-none"
 >
   <div class="absolute top-0 left-0 w-full h-full bg-no-repeat bg-contain bg-center"
   style="background-image:url({texture});">
