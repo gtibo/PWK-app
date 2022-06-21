@@ -111,10 +111,17 @@
     <canvas class="absolute w-full h-full object-contain" class:hidden={compute} bind:this={canvas}/>
 
     <div class:hidden={valide} class="flex flex-col gap-2 items-center">
-      <svg class="w-14 h-14 fill-gray-300" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.5724 4.46155C20.3495 4.46155 21.0562 4.91163 21.3848 5.61578L22.4614 7.9227C22.79 8.62685 23.4967 9.07693 24.2737 9.07693H29C30.1046 9.07693 31 9.97236 31 11.0769V25.5385C31 26.643 30.1046 27.5385 29 27.5385H3C1.89543 27.5385 1 26.643 1 25.5385V11.0769C1 9.97236 1.89543 9.07693 3 9.07693H7.72627C8.50332 9.07693 9.21004 8.62685 9.53864 7.9227L10.6152 5.61578C10.9438 4.91163 11.6505 4.46155 12.4276 4.46155H19.5724ZM16 23C18.7614 23 21 20.7614 21 18C21 15.2386 18.7614 13 16 13C13.2386 13 11 15.2386 11 18C11 20.7614 13.2386 23 16 23Z" />
+      {#if compute}
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 animate-spin fill-gray-300" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
       </svg>
-      <h3 class="lowercase font-semibold text-sm text-gray-400">Take a picture</h3>
+      <h3 class="lowercase font-semibold text-sm text-gray-400">Computing</h3>
+      {:else}
+        <svg class="w-14 h-14 fill-gray-300" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.5724 4.46155C20.3495 4.46155 21.0562 4.91163 21.3848 5.61578L22.4614 7.9227C22.79 8.62685 23.4967 9.07693 24.2737 9.07693H29C30.1046 9.07693 31 9.97236 31 11.0769V25.5385C31 26.643 30.1046 27.5385 29 27.5385H3C1.89543 27.5385 1 26.643 1 25.5385V11.0769C1 9.97236 1.89543 9.07693 3 9.07693H7.72627C8.50332 9.07693 9.21004 8.62685 9.53864 7.9227L10.6152 5.61578C10.9438 4.91163 11.6505 4.46155 12.4276 4.46155H19.5724ZM16 23C18.7614 23 21 20.7614 21 18C21 15.2386 18.7614 13 16 13C13.2386 13 11 15.2386 11 18C11 20.7614 13.2386 23 16 23Z" />
+        </svg>
+        <h3 class="lowercase font-semibold text-sm text-gray-400">Take a picture</h3>
+      {/if}
     </div>
 
     <input id="fileInput" on:change={onFileSelection} class="hidden" type="file" accept="image/*" capture="camera">
