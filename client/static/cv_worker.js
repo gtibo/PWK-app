@@ -21,13 +21,15 @@ function getAPage(src) {
   cv.dilate(dst, dst, M, anchor, 1, cv.BORDER_CONSTANT, cv.morphologyDefaultBorderValue());
   cv.erode(dst, dst, M, anchor, 1, cv.BORDER_CONSTANT, cv.morphologyDefaultBorderValue());
 
-
-  let img_contours = cv.Mat.zeros(src.rows, src.cols, cv.CV_8UC3);
+  M.delete();
 
   let contours = new cv.MatVector();
   let hierarchy = new cv.Mat();
 
   cv.findContours(dst, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
+
+  hierarchy.delete();
+  dst.delete();
 
   let cnts = []
   for (let i = 0; i < contours.size(); i++) {
@@ -48,9 +50,13 @@ function getAPage(src) {
         y: pointsData[2 * j + 1]
       });
 
-    if (result.points.length === 4) cnts.push(result);
+    approx.delete();
 
+    if (result.points.length === 4) cnts.push(result);
   }
+
+  contours.delete();
+
   if (cnts.length == 0) return false;
   cnts.sort((a, b) => b.area - a.area);
   let points = cnts[0].points;
@@ -75,7 +81,7 @@ function getAPage(src) {
   return out;
 }
 
-function organize(points){
+function organize(points) {
   let res = [];
   left = points.sort((a, b) => a.x - b.x).splice(0, 2);
   right = points.sort((a, b) => a.y - b.y);
@@ -87,6 +93,9 @@ function organize(points){
 }
 
 function crop(src) {
+
+  // cv.convertScaleAbs(src, src, 1.95, 0);
+
   let mask = new cv.Mat();
   let ksize = new cv.Size(5, 5);
   cv.cvtColor(src, mask, cv.COLOR_RGB2GRAY);
@@ -103,20 +112,23 @@ function crop(src) {
 
   cv.findContours(mask, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 
+  mask.delete();
+
   let poly = new cv.MatVector();
   for (let i = 0; i < contours.size(); i++) {
     let tmp = new cv.Mat();
     let cnt = contours.get(i);
     cv.approxPolyDP(cnt, tmp, 10, true);
     poly.push_back(tmp);
-    cnt.delete(); tmp.delete();
+    cnt.delete();
+    tmp.delete();
   }
 
   let contourMask = new cv.Mat.zeros(src.rows, src.cols, cv.CV_8UC3);
   for (let i = 0; i < poly.size(); ++i) {
-      let cnt = poly.get(i);
-      if(isOnBorder(cnt, src, 10)) continue;
-      cv.drawContours(contourMask, poly, i, new cv.Scalar(255,255,255), cv.FILLED, 8, hierarchy, 1);
+    let cnt = poly.get(i);
+    if (isOnBorder(cnt, src, 10)) continue;
+    cv.drawContours(contourMask, poly, i, new cv.Scalar(255, 255, 255), cv.FILLED, 8, hierarchy, 1);
   }
   cv.cvtColor(contourMask, contourMask, cv.COLOR_RGB2GRAY);
 
@@ -124,15 +136,22 @@ function crop(src) {
   let dst = new cv.Mat();
   cv.subtract(src, transparent, dst, contourMask, -1);
 
+  contourMask.delete();
+  transparent.delete();
+  hierarchy.delete();
+
   return dst;
 }
 
-function isOnBorder(cnt, src, margin){
-  let {height, width} = src.size();
+function isOnBorder(cnt, src, margin) {
+  let {
+    height,
+    width
+  } = src.size();
   for (let j = 0; j < cnt.data32S.length; j += 2) {
     let x = cnt.data32S[j],
-    y = cnt.data32S[j + 1];
-    if(y > height - margin || y < margin || x > width - margin || x < margin) return true;
+      y = cnt.data32S[j + 1];
+    if (y > height - margin || y < margin || x > width - margin || x < margin) return true;
   }
   return false;
 }
@@ -178,14 +197,17 @@ function imageDataFromMat(mat) {
   return clampedArray
 }
 
-onmessage = async function (e) {
+onmessage = async function(e) {
   if (loading) await cv;
   let src = cv.matFromImageData(e.data.param.imageData);
-  let { task } = e.data;
-  for(let i = 0; i < task.length; i++){
+  let {
+    task
+  } = e.data;
+  for (let i = 0; i < task.length; i++) {
     let pass = tricks[task[i]](src);
-    if(pass == false) break;
+    if (pass == false) break;
     src = pass;
   }
   postMessage(imageDataFromMat(src));
+  src.delete();
 }
