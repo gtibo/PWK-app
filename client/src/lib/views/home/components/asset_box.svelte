@@ -45,6 +45,11 @@
     progress.set(0);
     deleting = false;
   }
+  function requestNameChange(){
+    dispatch('rename', {
+      "name": name
+    });
+  }
 
 </script>
 
@@ -64,9 +69,9 @@
 
   <img class="w-full tile-bg aspect-video	object-contain" src="{request_path}/{vignette.path}"/>
   <footer class="flex gap-2 p-2 justify-between items-center">
-    <h3 class="font-semibold text-gray-600">
+    <h3 class="font-semibold text-gray-600 flex gap-2 items-center">
       <span class="text-xs text-gray-400">{type}</span>
-      {name}
+      <input class="block w-full" type="text" on:change={requestNameChange} bind:value={name}/>
     </h3>
     <div class="flex">
       <button class="px-3 py-2 bg-green-500/50 rounded-l-xl" on:click={requestEdition}>
@@ -94,6 +99,5 @@
 .deleting{
   @apply opacity-100 flex;
 }
-
 
 </style>

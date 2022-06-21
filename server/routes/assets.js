@@ -102,6 +102,15 @@ router.delete('/delete/:id', function(req, res, next) {
     next(err);
   }
 });
+// Rename asset
+router.put('/rename/:id', function(req, res, next) {
+  try {
+    editAsset(req.params.id, {name: req.body.name})
+    res.sendStatus(200);
+  } catch (err) {
+    next(err);
+  }
+});
 //
 // DRAWING ASSET ROUTES //
 //

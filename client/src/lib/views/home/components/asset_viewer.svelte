@@ -28,6 +28,18 @@
     asset_list = asset_list.filter(asset => asset.id !== asset_id);
   }
 
+  async function renameAsset(asset_id, asset_name){
+    let rename_response = await fetch(`${request_path}/assets/rename/${asset_id}`, {
+      body: JSON.stringify({
+        "name": asset_name
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8'
+      },
+      method: "put"
+    });
+  }
+
   function editAsset(asset_type, asset_id) {
     let fn = {
       "drawing": editDrawing,
@@ -65,7 +77,11 @@
   {#await fetch_promise then}
     {#each asset_list as asset, i ( asset.id)}
     <div animate:flip={{duration:400}} transition:fade>
-      <AssetBox on:edit={()=>{editAsset(asset.type, asset.id)}} on:delete={()=>{deleteAsset(asset.id)}} {...asset}/>
+      <AssetBox
+      on:rename={(e)=>{renameAsset(asset.id, e.detail.name)}}
+      on:edit={()=>{editAsset(asset.type, asset.id)}}
+      on:delete={()=>{deleteAsset(asset.id)}}
+      {...asset}/>
     </div>
     {/each}
   {/await}
